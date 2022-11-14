@@ -20,7 +20,7 @@ typedef enum
 typedef struct
 {
   Op op;
-  int payload;
+  long int payload;
 } Instruction;
 
 typedef struct
@@ -92,8 +92,25 @@ grow_to_right(MemoryArray* mem)
 }
 
 void
-move(MemoryArray* mem, int count)
+grow_to_left(MemoryArray* mem)
 {
+
+  size_t old_size = mem->size;
+  mem->size *= 2;
+  mem->array = realloc(mem->array, mem->size * sizeof(Cell));
+
+  memmove(mem->array + old_size, mem->array, sizeof(Cell) * old_size);
+  memset(mem->array, 0, sizeof(Cell) * old_size);
+  mem->current += old_size;
+}
+
+void
+move(MemoryArray* mem, long int count)
+{
+  while (count < 0 && -count > (long int)mem->current) {
+    grow_to_left(mem);
+  }
+
   mem->current += count;
 
   while (mem->current >= mem->size) {
@@ -205,7 +222,7 @@ size_t
 instruction_move(InstructionArray* array, const char* source, size_t i)
 {
 
-  int payload = 0;
+  long int payload = 0;
   while (source[i] == '>' || source[i] == '<') {
     payload += (source[i] == '>') ? 1 : -1;
     i++;
@@ -224,7 +241,7 @@ size_t
 instruction_add(InstructionArray* array, const char* source, size_t i)
 {
 
-  int payload = 0;
+  long int payload = 0;
   while (source[i] == '+' || source[i] == '-') {
     payload += (source[i] == '+') ? 1 : -1;
     i++;
@@ -242,7 +259,7 @@ instruction_add(InstructionArray* array, const char* source, size_t i)
 size_t
 instruction_in(InstructionArray* array, size_t i)
 {
-  int payload = 0;
+  long int payload = 0;
 
   Instruction inst = {
     .op = OP_IN,
@@ -256,7 +273,7 @@ instruction_in(InstructionArray* array, size_t i)
 size_t
 instruction_out(InstructionArray* array, size_t i)
 {
-  int payload = 0;
+  long int payload = 0;
 
   Instruction inst = {
     .op = OP_OUT,
@@ -270,7 +287,7 @@ instruction_out(InstructionArray* array, size_t i)
 size_t
 instruction_begin_loop(InstructionArray* array, size_t i)
 {
-  int payload = 0;
+  long int payload = 0;
 
   Instruction inst = {
     .op = OP_BEGIN_LOOP,
@@ -284,7 +301,7 @@ instruction_begin_loop(InstructionArray* array, size_t i)
 size_t
 instruction_end_loop(InstructionArray* array, size_t i)
 {
-  int payload = 0;
+  long int payload = 0;
 
   Instruction inst = {
     .op = OP_END_LOOP,

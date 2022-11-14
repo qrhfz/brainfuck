@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +21,7 @@ typedef enum
 typedef struct
 {
   Op op;
-  long int payload;
+  uint64_t payload;
 } Instruction;
 
 typedef struct
@@ -56,7 +57,7 @@ push_instruction(InstructionArray* array, Instruction value)
   array->length++;
 }
 
-typedef unsigned int Cell;
+typedef uint64_t Cell;
 typedef struct
 {
   size_t size;
@@ -67,7 +68,7 @@ typedef struct
 MemoryArray
 new_memory_array()
 {
-  int* array = calloc(INITIAL_SIZE, sizeof(int));
+  Cell* array = calloc(INITIAL_SIZE, sizeof(Cell));
   MemoryArray mem = {
     .size = INITIAL_SIZE,
     .current = 0,
@@ -222,7 +223,7 @@ size_t
 instruction_move(InstructionArray* array, const char* source, size_t i)
 {
 
-  long int payload = 0;
+  uint64_t payload = 0;
   while (source[i] == '>' || source[i] == '<') {
     payload += (source[i] == '>') ? 1 : -1;
     i++;
@@ -241,7 +242,7 @@ size_t
 instruction_add(InstructionArray* array, const char* source, size_t i)
 {
 
-  long int payload = 0;
+  uint64_t payload = 0;
   while (source[i] == '+' || source[i] == '-') {
     payload += (source[i] == '+') ? 1 : -1;
     i++;
@@ -259,7 +260,7 @@ instruction_add(InstructionArray* array, const char* source, size_t i)
 size_t
 instruction_in(InstructionArray* array, size_t i)
 {
-  long int payload = 0;
+  uint64_t payload = 0;
 
   Instruction inst = {
     .op = OP_IN,
@@ -273,7 +274,7 @@ instruction_in(InstructionArray* array, size_t i)
 size_t
 instruction_out(InstructionArray* array, size_t i)
 {
-  long int payload = 0;
+  uint64_t payload = 0;
 
   Instruction inst = {
     .op = OP_OUT,
@@ -287,7 +288,7 @@ instruction_out(InstructionArray* array, size_t i)
 size_t
 instruction_begin_loop(InstructionArray* array, size_t i)
 {
-  long int payload = 0;
+  uint64_t payload = 0;
 
   Instruction inst = {
     .op = OP_BEGIN_LOOP,
@@ -301,7 +302,7 @@ instruction_begin_loop(InstructionArray* array, size_t i)
 size_t
 instruction_end_loop(InstructionArray* array, size_t i)
 {
-  long int payload = 0;
+  uint64_t payload = 0;
 
   Instruction inst = {
     .op = OP_END_LOOP,
